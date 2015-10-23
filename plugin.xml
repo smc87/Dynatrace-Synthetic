@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<!-- plugin.xml file written by dynaTrace Client 6.2.2 -->
+<plugin>
+  <extension point="com.dynatrace.diagnostics.pdk.pluginconfig" id="com.dynatrace.synthetic" name="Dynatrace Synthetic">
+    <information>
+      <category value="" />
+      <displayname value="Dynatrace Synthetic" />
+      <description value="Collects test data from Dynatrace Synthetic." />
+      <supportlevel value="unsupported" />
+    </information>
+    <configuration>
+      <property key="userName" label="User Name" type="string" description="A Dynatrace Synthetic user with at least account primary, account admin or operator advanced role assigned." default="" multiline="false" />
+      <property key="password" label="Password" type="password" description="The password for the user listed above." default="" />
+      <property key="testName" label="Test Name" type="string" description="The full, friendly name assigned to the test you're interested in." default="" multiline="false" />
+      <property key="testType" label="Test Type" type="list" description="The type of test listed above." default="BACKBONE">
+        <list>
+          <item value="BACKBONE" />
+          <item value="LASTMILE" />
+          <item value="MOBILE" />
+          <item value="PRIVATEPEER" />
+        </list>
+      </property>
+    </configuration>
+  </extension>
+  <extension point="com.dynatrace.diagnostics.pdk.monitor" id="com.dynatrace.synthetic.monitor" name="Synthetic">
+    <plugin configid="com.dynatrace.synthetic" class="com.dynatrace.synthetic.monitor" />
+  </extension>
+  <extension point="com.dynatrace.diagnostics.pdk.monitormetricgroup" id="com.dynatrace.synthetic.monitor.data" name="Script Metrics">
+    <metricgroup monitorid="com.dynatrace.synthetic.monitor">
+      <metric defaultrate="purepath" name="responseTime" unit="ms" description="The average response time since the last poll split by location.  Please note that the average reported here combined might not exactly match what's being reported in the portal." />
+      <metric defaultrate="purepath" name="availability" unit="percent" description="The availability reported since the last poll split by location.  Availability is calculated with the assumption a failed step equals a failed test run." />
+      <metric defaultrate="purepath" name="successfulSteps" unit="number" description="The number of successful steps since the last poll split by location." />
+      <metric defaultrate="purepath" name="failedSteps" unit="number" description="The number of failed steps since the last poll split by location." />
+      <metric defaultrate="purepath" name="successObjects" unit="number" description="The number of successful objects since the last poll split by location." />
+      <metric defaultrate="purepath" name="failedObjects" unit="number" description="The number of failed objects since the last poll split by location." />
+      <metric defaultrate="purepath" name="averageNumberOfBytes" unit="bytes" description="The average number of bytes downloaded since the last poll split by location." />
+      <metric defaultrate="purepath" name="testExecutions" unit="number" description="The number of tests executed since the last poll split by location.  This number will only be accurate if you poll at least once a day." />
+    </metricgroup>
+  </extension>
+</plugin>

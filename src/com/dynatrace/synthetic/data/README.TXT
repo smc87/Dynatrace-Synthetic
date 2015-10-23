@@ -1,0 +1,1 @@
+Generated Plain Old Java Objects from JSON using http://www.jsonschema2pojo.org/
