@@ -22,6 +22,7 @@ public class Cache {
     }
 
     public void loadCacheData(){
+    	checkForCacheDir();
         Properties prop = new Properties();
         InputStream input = null;
         try{
@@ -61,6 +62,7 @@ public class Cache {
 	}
 
 	public void saveCacheData(String scriptName, long lastRunTime){
+		checkForCacheDir();
         Properties prop = new Properties();
         OutputStream output = null;
         try{
@@ -84,6 +86,19 @@ public class Cache {
             }
         }
     }
+	
+	private void checkForCacheDir(){
+		File cacheDir = new File("cache");
+		
+		if (!cacheDir.exists()){
+			log.info("Creating cache directory");
+			try {
+				cacheDir.mkdir();
+			} catch (SecurityException se){
+				log.warning("We don't have the proper permissions to create this directory");
+			}
+		}
+	}
     
     public boolean doesCacheExist(){
     	boolean exist = false;
