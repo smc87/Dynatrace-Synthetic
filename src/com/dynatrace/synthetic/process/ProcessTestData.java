@@ -45,7 +45,7 @@ public class ProcessTestData {
     		log.fine("Successfully created the summary object - saving time stamp");
     		cache.saveCacheData(this.scriptName, Long.valueOf(testData.getQueryTime().getEnd()));
     	} else {
-    		log.severe("Unable to summarize the data");
+    		log.fine("There was no test data available");
     	}
     	
     	return processedSummaryData;

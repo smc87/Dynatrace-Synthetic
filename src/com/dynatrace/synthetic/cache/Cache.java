@@ -12,6 +12,7 @@ public class Cache {
 	
     private String name;
     private String id;
+    private String cacheFolderName = "lastRunCache";
     private long lastRunTime;
     
     private String cacheFileName;
@@ -27,7 +28,7 @@ public class Cache {
         InputStream input = null;
         try{
 
-            input = new FileInputStream("cache" + File.separator + this.cacheFileName);
+            input = new FileInputStream(cacheFolderName + File.separator + this.cacheFileName);
 
             // load a properties file
             prop.load(input);
@@ -67,7 +68,7 @@ public class Cache {
         OutputStream output = null;
         try{
 
-            output = new FileOutputStream("cache" + File.separator + this.cacheFileName);
+            output = new FileOutputStream(cacheFolderName + File.separator + this.cacheFileName);
 
             prop.setProperty("name", scriptName);
             prop.setProperty("id", this.id);
@@ -88,7 +89,7 @@ public class Cache {
     }
 	
 	private void checkForCacheDir(){
-		File cacheDir = new File("cache");
+		File cacheDir = new File(cacheFolderName);
 		
 		if (!cacheDir.exists()){
 			log.info("Creating cache directory");
@@ -102,7 +103,7 @@ public class Cache {
     
     public boolean doesCacheExist(){
     	boolean exist = false;
-    	File f = new File("cache" + File.separator + this.cacheFileName);
+    	File f = new File(cacheFolderName + File.separator + this.cacheFileName);
     	if(f.exists() && !f.isDirectory()){
     		exist = true;
     	}
@@ -112,7 +113,7 @@ public class Cache {
 
     public void deleteStaleCache(int days){
         log.fine("Removing cache files older than " + days + " days");
-        File directory = new File("cache");
+        File directory = new File(cacheFolderName);
         if(directory.exists()){
             File[] listFiles = directory.listFiles();
             long purgeTime = System.currentTimeMillis() - (days * 24 * 60 * 60 * 1000);
