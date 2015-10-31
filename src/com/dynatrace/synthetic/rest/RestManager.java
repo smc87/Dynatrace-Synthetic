@@ -43,7 +43,9 @@ public class RestManager {
 	        }
 	    });
 		
-		Unirest.setTimeouts(Vars.DEFAULT_CONNECTION_TIMEOUT_MILLISECONDS, Vars.DEFAULT_SOCKET_TIMEOUT_MILLISECONDS);
+
+	Unirest.setTimeouts(Vars.DEFAULT_CONNECTION_TIMEOUT_MILLISECONDS, Vars.DEFAULT_SOCKET_TIMEOUT_MILLISECONDS);
+
 	}
 
 	public static Monitors getMonitors(String token, String testName, String testType) throws UnirestException {
@@ -66,14 +68,32 @@ public class RestManager {
 	    return monitors;
 	}
 
-	public static String Authenticate(String user, String password) throws UnirestException{
+	public static String Authenticate(String user, String password, String proxyUser, String proxyPass, String proxyHost, String proxyPort, boolean proxyAuth, boolean proxyOn) throws UnirestException{
 		log.fine("Attempting to authenticate " + user);
 	    String accessToken = null;
-	    HttpResponse<JsonNode> response = Unirest.post(Vars.REST_URL)
+	    int port = Integer.parseInt(proxyPort);
+	    if (proxyOn) enableProxy(proxyHost, port);
+	    log.fine("webservice API URL: " + Vars.REST_URL);
+	    HttpResponse<JsonNode> response = null;
+	    if (proxyAuth) {
+	   response = Unirest.post(Vars.REST_URL)	    		
+	    		.basicAuth(proxyUser, proxyPass)
 	            .routeParam("method", "login")
 	            .header("Accept", "application/json")
 	            .body("{\"user\":\"" + user + "\", \"password\": \"" + password + "\"}")
 	            .asJson();
+	    } else {
+		response = Unirest.post(Vars.REST_URL)	    		
+		            .routeParam("method", "login")
+		            .header("Accept", "application/json")
+		            .body("{\"user\":\"" + user + "\", \"password\": \"" + password + "\"}")
+		            .asJson();	    	
+	    }
+	    
+	    
+	    
+	    
+	    log.fine("sent request");
 	    if(response.getStatus() == 200) {
 	        log.fine("Successfully authenticated");
 	        accessToken = response.getBody().getObject().getString("accessToken");
@@ -84,6 +104,7 @@ public class RestManager {
 	        log.severe("An unexpected error has occurred!");
 	        log.severe(response.getBody().toString());
 	    }
+	    
 	    return accessToken;
 	}
 
@@ -118,4 +139,7 @@ public class RestManager {
 			e.printStackTrace();
 		}
 	}
+	
+
+	
 }

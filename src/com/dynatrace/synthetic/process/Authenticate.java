@@ -6,8 +6,8 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 public class Authenticate {
 	 private String accessToken;
 
-    public Authenticate(String user, String password) throws UnirestException{
-        this.accessToken = RestManager.Authenticate(user, password);
+    public Authenticate(String user, String password, String proxyUser, String proxyPassword, String proxyHost, String proxyPort, boolean proxyAuth, boolean proxyOn) throws UnirestException{
+        this.accessToken = RestManager.Authenticate(user, password, proxyUser, proxyPassword, proxyHost, proxyPort, proxyAuth, proxyOn);
     }
 
     @Override

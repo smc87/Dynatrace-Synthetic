@@ -21,6 +21,32 @@
           <item value="PRIVATEPEER" />
         </list>
       </property>
+      <property key="proxyOn" label="Proxy" type="boolean" description="If enabled, the configured HTTP proxy server will be used. If you enable this option, run the plugin on a dedicated collector." default="false" />
+      <property key="proxyHost" label="Proxy host" type="string" description="The hostname of the HTTP proxy server." default="" multiline="false">
+        <visibility>
+          <rule key="proxyOn" value="true" />
+        </visibility>
+      </property>
+      <property key="proxyPort" label="Proxy port" type="string" description="The port of the HTTP proxy server." default="8080">
+        <visibility>
+          <rule key="proxyOn" value="true" />
+        </visibility>
+      </property>
+       <property key="proxyAuth" label="Proxy authentication" type="boolean" description="Enables proxy authentication." default="false">
+        <visibility>
+          <rule key="proxyOn" value="true" />
+        </visibility>
+      </property>
+      <property key="proxyUser" label="Proxy username" type="string" description="The username that is used for authorization with the HTTP proxy server." default="" multiline="false">
+        <visibility>
+          <rule key="proxyAuth" value="true" />
+        </visibility>
+      </property>
+      <property key="proxyPass" label="Proxy password" type="password" description="The password for the proxy username." default="">
+        <visibility>
+          <rule key="proxyAuth" value="true" />
+        </visibility>
+      </property>
     </configuration>
   </extension>
   <extension point="com.dynatrace.diagnostics.pdk.monitor" id="com.dynatrace.synthetic.monitor" name="Synthetic">

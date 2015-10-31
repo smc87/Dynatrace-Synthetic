@@ -13,6 +13,8 @@ import com.dynatrace.synthetic.process.Authenticate;
 import com.dynatrace.synthetic.process.ProcessTestData;
 import com.dynatrace.synthetic.process.Tests;
 import com.dynatrace.synthetic.rest.RestManager;
+import com.mashape.unirest.http.exceptions.UnirestException;
+
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -39,6 +41,12 @@ public class monitor implements Monitor {
 	private String password;
 	private String scriptName;
 	private String scriptType;
+	private boolean proxyAuth;
+	private boolean proxyOn;
+	private String proxyHost;
+	private String proxyPort;
+	private String proxyUser;
+	private String proxyPass;
 	
 	private Collection<MonitorMeasure> monitorMeasures;
 	private MonitorMeasure dynamicMeasure;
@@ -49,10 +57,17 @@ public class monitor implements Monitor {
 		password = env.getConfigPassword("password");
 		scriptName = env.getConfigString("testName");
 		scriptType = env.getConfigString("testType");
+		proxyHost = env.getConfigString("proxyHost");
+		proxyPort = env.getConfigString("proxyPort");
+		proxyUser = env.getConfigString("proxyUser");
+		proxyPass = env.getConfigPassword("proxyPass");
+		proxyAuth = env.getConfigBoolean("proxyAuth");
+		proxyOn = env.getConfigBoolean("proxyOn");
 		
 		if(isNotNull(userName))   return new Status(Status.StatusCode.ErrorInternalConfigurationProblem, "A valid Dynatrace Synthetic user is required");
 		if(isNotNull(password))   return new Status(Status.StatusCode.ErrorInternalConfigurationProblem, "A valid Dynatrace Synthetic password is required");
 		if(isNotNull(scriptName)) return new Status(Status.StatusCode.ErrorInternalConfigurationProblem, "A valid Dynatrace Synthetic script is required");
+		
 		
 		return new Status(Status.StatusCode.Success);
 	}
@@ -64,8 +79,8 @@ public class monitor implements Monitor {
 	@Override
 	public Status execute(MonitorEnvironment env) throws Exception {
 		log.fine("Starting the execute method");
-
-		Authenticate token = new Authenticate(userName, password);
+		try {
+		Authenticate token = new Authenticate(userName, password, proxyUser, proxyPass, proxyHost, proxyPort, proxyAuth, proxyOn);		
 		log.fine("Successfully autheticated!  Using token: " + token.getAccessToken());
 		String monitorId = new Tests(token.getAccessToken()).getMonitorId(scriptName, scriptType);
 		log.fine("Found a matching script with an ID of " + monitorId);
@@ -121,11 +136,19 @@ public class monitor implements Monitor {
 	    		dynamicMeasure = env.createDynamicMeasure(subscribedMonitorMeasure, DYNAMIC_MEASURE_NAME, key);
 	    		dynamicMeasure.setValue(testResultSummary.getAverageNumberOfBytes());
 	    	}
+	    	
 	    }
 	    
 	    log.fine("Finished the execute method");
-		return new Status(Status.StatusCode.Success);
-	}
+	    return new Status(Status.StatusCode.Success);
+	   
+		}    catch (UnirestException e) {
+	    	log.severe(e.toString());
+	    	return new Status(Status.StatusCode.ErrorInternalException);
+	    }
+		
+		}
+		
 
 	 @Override
 	public void teardown(MonitorEnvironment env) throws Exception {
